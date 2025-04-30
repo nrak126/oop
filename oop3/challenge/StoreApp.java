@@ -3,13 +3,29 @@ import java.awt.*;
 
 public class StoreApp extends JFrame {
 
-    private JTextField janCodeField; // janコードを入力するフィールド
+    JTextField janCodeField; // janコードを入力するフィールド
     private JTextArea outputArea;  // 処理結果を表示するエリア
+    private JButton calcButton; // 処理を実行するボタン
 
     // レシートオブジェクトの生成
     Receipt receipt = new Receipt();
+    // 販売商品を登録するための配列
+    ProductItem[] salesProducts = new ProductItem[10];
 
     public StoreApp() {
+        // 商品の登録済みデータを内部に保持
+        salesProducts[0] = new ProductItem("オレンジ", 150, 1, "000");
+        salesProducts[1] = new ProductItem("バナナ", 200, 1, "111");
+        salesProducts[2] = new ProductItem("歯ブラシ", 120, 1, "222");
+        salesProducts[3] = new ProductItem("納豆", 110, 1, "333");
+        salesProducts[4] = new ProductItem("野菜ジュース", 90, 1, "444");
+        salesProducts[5] = new ProductItem("白菜", 170, 1, "555");
+        salesProducts[6] = new ProductItem("唐揚げ", 220, 1, "666");
+        salesProducts[7] = new ProductItem("フルグラ", 700, 1, "777");
+        salesProducts[8] = new ProductItem("お好み焼きソース", 250, 1, "888");
+        salesProducts[9] = new ProductItem("ガラムマサラ", 300, 1, "999");
+
+
         // --- ウィンドウの基本設定 ---
         setTitle("レジ");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -22,6 +38,7 @@ public class StoreApp extends JFrame {
 
         // GridBagLayoutを使用して柔軟な配置を行う
         JPanel topPanel = new JPanel(new GridBagLayout());
+        JPanel bottomPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
         // GridBagConstraintsのデフォルト設定
@@ -46,6 +63,10 @@ public class StoreApp extends JFrame {
         janCodeField = new JTextField();
         topPanel.add(janCodeField, gbc);
 
+        // 合計ボタンをボトムパネルに追加
+        calcButton = new JButton("合計計算");
+        bottomPanel.add(calcButton);
+
         // --- 中央に配置する部品 (結果表示エリア) ---
         outputArea = new JTextArea();
         // outputArea.setEditable(false); // 必要に応じて編集不可に設定
@@ -56,63 +77,40 @@ public class StoreApp extends JFrame {
         add(topPanel, BorderLayout.NORTH);
         // スクロール可能なテキストエリアをウィンドウの中央に配置（中央領域は利用可能な残りのスペースをすべて使う）
         add(scrollPane, BorderLayout.CENTER);
+        // 下部パネルをウィンドウの南（下）に配置
+        add(bottomPanel, BorderLayout.SOUTH);
 
-        // --- ボタンのアクション設定 ---
-        // processButton.addActionListener(e -> {
-        //     // 各フィールドからテキストを取得
-        //     String productName = janCodeField.getText();
-        //     String unitPriceText = unitPriceField.getText();
-        //     String quantityText = quantityField.getText();
+        // 合計計算ボタンを押した時の処理
+        calcButton.addActionListener(e -> {
+            // 合計点数と合計金額を出力
+            outputArea.append("\n--- 合計点数: " + receipt.getTotalQuantity() + " 点 ---");
+            outputArea.append("\n--- 合計金額: " + receipt.getTotalPrice() + " 円 ---\n\n");
+        });
 
-        //     // 入力が空でないか基本的なチェック
-        //     if (productName.isEmpty() || unitPriceText.isEmpty() || quantityText.isEmpty()) {
-        //         System.err.println("未入力項目があります。");
-        //         return; // 処理を中断
-        //     }
+        // janコードフィールドでエンターキーが押された時の処理
+        janCodeField.addActionListener(e -> {
+            // janコードフィールドに入力されたテキストを取得
+            String janCode = janCodeField.getText();
 
-        //     // 単価と数量を数値に変換
-        //     // 単価は小数点を含む可能性があるためdoubleを使用
-        //     double unitPrice = Double.parseDouble(unitPriceText);
-        //     // 数量は整数とする場合が多いが、状況に応じてdoubleも可
-        //     int quantity = Integer.parseInt(quantityText);
-
-        //     // 単価や数量が負でないかチェック
-        //     if (unitPrice < 0 || quantity < 0) {
-        //         System.err.println("単価と数量には正の数値を入力してください。");
-        //         return;
-        //     }
-
-        //     // productItemオブジェクトのitemを生成してreceiptのproduct配列に追加
-        //     ProductItem item = new ProductItem(productName, unitPrice, quantity);
-        //     receipt.addProduct(item);
-
-        //     // 結果をテキストエリアに追加
-        //     String outputLine = item.toString();
-        //     // appendメソッドで追記
-        //     outputArea.append(outputLine + System.lineSeparator());
-            
-        //     // 入力フィールドをクリアする
-        //     janCodeField.setText("");
-        //     unitPriceField.setText("");
-        //     quantityField.setText("");
-        //     // 商品名フィールドにカーソルを移動
-        //     janCodeField.requestFocus();
-        // });
-        
-        // // 合計計算ボタンを押した時の処理
-        // calcButton.addActionListener(e -> {
-        //     // 合計点数と合計金額を出力
-        //     outputArea.append("\n--- 合計点数: " + receipt.getTotalQuantity() + " 点 ---");
-        //     outputArea.append("\n--- 合計金額: " + receipt.getTotalPrice() + " 円 ---");
-        // });
-
-        private ActionListener enterActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                textOutput.append(textInput.getText() + "\n");
-                textInput.setText("");
+            for (int i = 0; i < salesProducts.length; i++) {
+                // もし、販売商品に入力したjanコードに一致する商品があれば
+                // ついでにnullチェック
+                if (salesProducts[i].janCode.equals(janCode) && salesProducts[i] != null) {
+                    // レシートに商品を追加する
+                    receipt.addProduct(salesProducts[i]);
+                    // 結果をテキストエリアに追加
+                    String outputLine = salesProducts[i].toString();
+                    // appendメソッドで追記
+                    outputArea.append(outputLine + System.lineSeparator());
+                    // 商品が見つかったらループを抜ける
+                    break;
+                }
             }
-        };
+            // janコードフィールドをクリア
+            janCodeField.setText("");
+            // janコードフィールドにカーソルを移動
+            janCodeField.requestFocus();
+        });
 
         // --- ウィンドウを表示 ---
         setVisible(true);

@@ -6,10 +6,11 @@ public class ProductItem {
 	public String janCode;
 
 	// コンストラクタ
-	public ProductItem(String productName, double unitPrice, int quantity) {
+	public ProductItem(String productName, double unitPrice, int quantity, String janCode) {
 			this.productName = productName;
 			this.unitPrice = unitPrice;
 			this.quantity = quantity;
+			this.janCode = janCode;
 	}
 
 	// 小計を返すメソッド

@@ -159,7 +159,7 @@ public class StoreApp extends JFrame {
         calcButton.addActionListener(e -> {
             // 合計点数と合計金額を出力
             outputArea.append("\n--- 合計点数: " + receipt.getTotalQuantity() + " 点 ---");
-            outputArea.append("\n--- 合計金額: " + receipt.getTotalPrice() + " 円 ---");
+            outputArea.append("\n--- 合計金額: " + receipt.getTotalPrice() + " 円 ---\n\n");
         });
 
         // --- ウィンドウを表示 ---
