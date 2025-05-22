@@ -10,7 +10,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         setTitle("図形描画");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(900, 600);
         setLocationRelativeTo(null);
 
         drawingPanel = new DrawingPanel();
@@ -81,7 +81,36 @@ public class MainFrame extends JFrame {
         blueRadioButton.addActionListener(colorSelectionListener);
         greenRadioButton.addActionListener(colorSelectionListener);
         // --- ここまで色選択ラジオボタン ---
-
+        
+        // --- 描画モードラジオボタン ---
+        JRadioButton drawRadioButton = new JRadioButton("描く");
+        drawRadioButton.setActionCommand("Draw");
+        drawRadioButton.setSelected(true);
+        drawingPanel.setCurrentDrawMode("Draw");
+        JRadioButton moveRadioButton = new JRadioButton("移動");
+        moveRadioButton.setActionCommand("Move");
+        JRadioButton deleteRadioButton = new JRadioButton("削除");
+        deleteRadioButton.setActionCommand("Delete");
+        
+        // ButtonGroupを作成し、ラジオボタンをグループ化する
+        // これにより、一度に1つのラジオボタンのみが選択されるようになる
+        ButtonGroup modeGroup = new ButtonGroup();
+        modeGroup.add(drawRadioButton);
+        modeGroup.add(moveRadioButton);
+        modeGroup.add(deleteRadioButton);
+        
+        // ラジオボタン用のアクションリスナー
+        ActionListener modeSelectionListener = e -> {
+            // 選択されたラジオボタンのアクションコマンドをDrawingPanelに伝える
+            drawingPanel.setCurrentDrawMode(e.getActionCommand());
+            // if (e.getSource() == circleRadioButton) でイベントの発生元コンポーネントで条件分岐可能
+        };
+        
+        drawRadioButton.addActionListener(modeSelectionListener);
+        moveRadioButton.addActionListener(modeSelectionListener);
+        deleteRadioButton.addActionListener(modeSelectionListener);
+        // --- ここまで描画モードラジオボタン ---
+        
         // --- クリアボタン ---
         JButton clearButton = new JButton("クリア");
         clearButton.addActionListener(e -> {
@@ -89,6 +118,20 @@ public class MainFrame extends JFrame {
             drawingPanel.clearShapes();
         });
         // --- ここまでクリアボタン ---
+
+        // --- 元に戻すボタン ---
+        JButton undoButton = new JButton("元に戻す");
+        undoButton.addActionListener(e -> {
+            drawingPanel.undo();
+        });
+        // --- ここまで元に戻すボタン ---
+
+        // --- やり直しボタン ---
+        JButton redoButton = new JButton("やり直し");
+        redoButton.addActionListener(e -> {
+            drawingPanel.redo();
+        });
+        // --- ここまでやり直しボタン ---
 
         // ツールバーにコンポーネントを配置
         JToolBar toolBar = new JToolBar();
@@ -102,6 +145,12 @@ public class MainFrame extends JFrame {
         toolBar.add(blueRadioButton);
         toolBar.add(greenRadioButton);
         toolBar.addSeparator();
+        toolBar.add(new JLabel("描画モード: "));
+        toolBar.add(drawRadioButton);
+        toolBar.add(moveRadioButton);
+        toolBar.add(deleteRadioButton);
+        toolBar.add(undoButton);
+        toolBar.add(redoButton);
         toolBar.add(clearButton);
 
         add(toolBar, BorderLayout.NORTH);
