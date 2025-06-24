@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Compile and Run AichiTouristSpot",
+			"type": "shell",
+			"command": "cd '/Users/k24142kk/lesson/2/前期/オブ演１/9/assignment' && javac -cp src src/oop1/section09/kadai1/AichiTouristSpot.java && java -cp src oop1.section09.kadai1.AichiTouristSpot",
+			"group": "build",
+			"isBackground": false
+		}
+	]
+}
